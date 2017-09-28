@@ -1,6 +1,43 @@
-FROM openjdk:8-jdk
+FROM ubuntu:trusty
 
-RUN apt-get update && apt-get install -y git curl && rm -rf /var/lib/apt/lists/*
+# Default to UTF-8 file.encoding
+ENV LANG C.UTF-8
+
+echo "Asia/Shanghai" > /etc/timezone
+dpkg-reconfigure -f noninteractive tzdata
+
+# JDK START
+
+RUN echo "" > /etc/apt/sources.list \
+ && echo "deb http://mirrors.aliyun.com/ubuntu/ trusty main multiverse restricted universe" >> /etc/apt/sources.list \
+ && echo "deb http://mirrors.aliyun.com/ubuntu/ trusty-backports main multiverse restricted universe" >> /etc/apt/sources.list \
+ && echo "deb http://mirrors.aliyun.com/ubuntu/ trusty-proposed main multiverse restricted universe" >> /etc/apt/sources.list \
+ && echo "deb http://mirrors.aliyun.com/ubuntu/ trusty-security main multiverse restricted universe" >> /etc/apt/sources.list \
+ && echo "deb http://mirrors.aliyun.com/ubuntu/ trusty-updates main multiverse restricted universe" >> /etc/apt/sources.list \
+ && echo "deb-src http://mirrors.aliyun.com/ubuntu/ trusty main multiverse restricted universe" >> /etc/apt/sources.list \
+ && echo "deb-src http://mirrors.aliyun.com/ubuntu/ trusty-backports main multiverse restricted universe" >> /etc/apt/sources.list \
+ && echo "deb-src http://mirrors.aliyun.com/ubuntu/ trusty-proposed main multiverse restricted universe" >> /etc/apt/sources.list \
+ && echo "deb-src http://mirrors.aliyun.com/ubuntu/ trusty-security main multiverse restricted universe" >> /etc/apt/sources.list \
+ && echo "deb-src http://mirrors.aliyun.com/ubuntu/ trusty-updates main multiverse restricted universe" >> /etc/apt/sources.list
+
+RUN apt-get update && apt-get install -y python-software-properties software-properties-common
+RUN add-apt-repository ppa:webupd8team/java
+RUN apt-get update
+RUN echo "oracle-java8-installer shared/accepted-oracle-license-v1-1 select true" | debconf-set-selections
+RUN apt-get install -y oracle-java8-installer
+RUN apt-get install -y oracle-java8-set-default
+
+ENV JAVA_HOME /usr/lib/jvm/java-8-oracle
+ENV PATH $PATH:/usr/lib/jvm/java-8-oracle/bin
+
+RUN echo $JAVA_HONE
+
+# JDK DONE #
+
+RUN apt-get update && apt-get install -y git curl \
+    python-dev gcc gettext libpq-dev libmysqlclient-dev
+
+RUN rm -rf /var/lib/apt/lists/*
 
 ARG user=jenkins
 ARG group=jenkins
