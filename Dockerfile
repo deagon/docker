@@ -3,8 +3,9 @@ FROM ubuntu:trusty
 # Default to UTF-8 file.encoding
 ENV LANG C.UTF-8
 
-echo "Asia/Shanghai" > /etc/timezone
-dpkg-reconfigure -f noninteractive tzdata
+# Set the timezone of "UTC+8"
+RUN echo "Asia/Shanghai" > /etc/timezone \
+ && dpkg-reconfigure -f noninteractive tzdata
 
 # JDK START
 
